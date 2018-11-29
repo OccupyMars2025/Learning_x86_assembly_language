@@ -10,8 +10,8 @@ start:  mov ax, 0b800h
 
 	mov cx, 80
         mov bx, offset s - offset se
-     s: mov es:[di], '!'
-	mov es:[di+1], 00100100b
+     s: mov byte ptr es:[di], '!'
+	mov byte ptr es:[di+1], 00100100b
 	add di, 2
 	int 7ch
     se: nop

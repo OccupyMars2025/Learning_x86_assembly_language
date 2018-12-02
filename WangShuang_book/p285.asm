@@ -35,9 +35,10 @@ start:	mov ax, stack
 
 	;modify the old entry address to the new one
 	cli
+	;set IF flag to 0, so next instructions won't be interrupted
 	mov word ptr es:[9*4], 200h
 	mov word ptr es:[9*4+2], 0
-	sti
+	sti ;set IF flag to 1
 	
 	; end of main program
 	mov ax, 4c00h
@@ -49,7 +50,11 @@ start:	mov ax, stack
 	; params: none
 	; return: none
 
-	push.....
+	push ax
+	push bx
+	push cx
+	push es
+	push di
 
 	in al, 60h
 
@@ -59,8 +64,34 @@ start:	mov ax, stack
 	and bh, 11111100b
 	push bx
 	popf
-	mov bx, 
-	call dword ptr 
+	mov bx, 0
+	mov es, bx
+	call dword ptr es:[200h]
+
+        ;scan code for press 'A' button=1eh
+	;scan code for release 'A' button = 1eh + 80h = 9eh
+	cmp al, 9eh
+	jne int9ret
+
+	;cover the whole screen with 'A'
+	mov ax, 0b800h
+	mov es, ax
+	mov di, 0
+   	mov cx, 2000
+    s:	mov byte ptr es:[di], 'A'
+	add di, 2
+	loop s
+
+int9ret:
+	pop di
+	pop es
+	pop cx
+	pop bx
+	pop ax
+
+	iret
+
+int9end: nop
 
 code ends
 
